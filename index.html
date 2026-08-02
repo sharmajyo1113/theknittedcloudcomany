@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>The Knitted Cloud Company — Soft knitted toys</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-row">
+      <div class="logo">The Knitted Cloud</div>
+      <nav class="main-nav">
+        <a href="#">Home</a>
+        <a href="#">Shop</a>
+        <a href="#">About</a>
+        <a href="#">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-inner container">
+        <h1>Handmade knitted toys — soft, safe, and full of character</h1>
+        <p class="lead">Made with love and organic yarns. Explore our collection.</p>
+        <a class="btn primary" href="#gallery">Shop the collection</a>
+      </div>
+      <!-- hero image (fallback) -->
+      <img class="hero-image" src="images/hero.svg" alt="Collection of knitted toys">
+    </section>
+
+    <section id="gallery" class="container gallery-section">
+      <h2 class="section-title">Featured toys</h2>
+      <div class="grid">
+        <article class="card">
+          <button class="img-btn" data-src="images/toy1.svg" aria-label="Open toy 1">
+            <img src="images/toy1-thumb.svg" alt="Knitted bunny toy">
+          </button>
+          <div class="card-body">
+            <h3>Flopsy Bunny</h3>
+            <p class="price">€22.00</p>
+            <p class="muted">Super soft, 100% cotton yarn</p>
+          </div>
+        </article>
+
+        <article class="card">
+          <button class="img-btn" data-src="images/toy2.svg" aria-label="Open toy 2">
+            <img src="images/toy2-thumb.svg" alt="Knitted teddy toy">
+          </button>
+          <div class="card-body">
+            <h3>Cozy Teddy</h3>
+            <p class="price">€28.00</p>
+            <p class="muted">Stuffed with recycled fill</p>
+          </div>
+        </article>
+
+        <article class="card">
+          <button class="img-btn" data-src="images/toy3.svg" aria-label="Open toy 3">
+            <img src="images/toy3-thumb.svg" alt="Knitted lamb toy">
+          </button>
+          <div class="card-body">
+            <h3>Little Lamb</h3>
+            <p class="price">€25.00</p>
+            <p class="muted">Perfect for cuddles</p>
+          </div>
+        </article>
+
+        <article class="card">
+          <button class="img-btn" data-src="images/toy4.svg" aria-label="Open toy 4">
+            <img src="images/toy4-thumb.svg" alt="Knitted fox toy">
+          </button>
+          <div class="card-body">
+            <h3>Foxy</h3>
+            <p class="price">€24.00</p>
+            <p class="muted">Bright, playful design</p>
+          </div>
+        </article>
+      </div>
+      <div class="center">
+        <a class="btn" href="#">Browse all toys</a>
+      </div>
+    </section>
+
+    <section class="about container">
+      <div class="about-grid">
+        <div>
+          <h2>About our toys</h2>
+          <p>Each toy is hand-knitted in small batches using natural yarns and child-safe finishes. We focus on durability, safety and thoughtful design so every toy can be loved for years.</p>
+          <a class="btn" href="#">Learn more</a>
+        </div>
+        <img src="images/about.svg" alt="Knitted toys workshop">
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>© <span id="year"></span> The Knitted Cloud Company</p>
+      <p class="muted">Made with yarn and care.</p>
+    </div>
+  </footer>
+
+  <!-- Image modal -->
+  <div id="imageModal" class="modal" aria-hidden="true">
+    <button class="modal-close" aria-label="Close">×</button>
+    <img class="modal-img" src="" alt="">
+  </div>
+
+  <script>
+    // set year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // modal logic
+    const modal = document.getElementById('imageModal');
+    const modalImg = modal.querySelector('.modal-img');
+    const closeBtn = modal.querySelector('.modal-close');
+
+    document.querySelectorAll('.img-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const src = btn.dataset.src;
+        modalImg.src = src;
+        modalImg.alt = btn.querySelector('img').alt;
+        modal.classList.add('open');
+        modal.setAttribute('aria-hidden', 'false');
+      });
+    });
+
+    closeBtn.addEventListener('click', () => {
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden', 'true');
+      modalImg.src = '';
+    });
+
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        closeBtn.click();
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modal.classList.contains('open')) closeBtn.click();
+    });
+  </script>
+</body>
+</html>
