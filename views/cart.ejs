@@ -1,0 +1,48 @@
+<%- include('partials/header') %>
+
+<h1>Your Cart</h1>
+
+<% if (!items.length) { %>
+  <div class="empty-state">
+    <h3>Your cart is empty.</h3>
+    <p><a href="/">Continue shopping →</a></p>
+  </div>
+<% } else { %>
+  <% items.forEach(function(item) { const p = item.product; %>
+    <form class="cart-row" method="post" action="/cart/update">
+      <%- csrfField() %>
+      <input type="hidden" name="redirect" value="/cart">
+      <input type="hidden" name="product_id" value="<%= p.id %>">
+      <div class="prod-swatch">
+        <% if (p.image_path) { %><img src="<%= p.image_path %>" alt=""><% } else { %><%- productIconSvg(p.icon, 56) %><% } %>
+      </div>
+      <div>
+        <a href="/products/<%= p.slug %>" style="color:var(--ink);font-weight:600;"><%= p.name %></a>
+        <div style="color:var(--ink-soft);font-size:0.85rem;"><%= money(p.price) %> each</div>
+        <% if (item.exceedsStock) { %><div class="form-error">Only <%= p.stock %> in stock — quantity will be reduced.</div><% } %>
+      </div>
+      <input class="qty-input" type="number" name="quantity" value="<%= item.quantity %>" min="0" max="<%= p.stock %>">
+      <div style="font-weight:600;"><%= money(item.lineTotal) %></div>
+      <div style="display:flex;gap:0.4rem;">
+        <button class="btn btn-line btn-sm" type="submit" formaction="/cart/update">Update</button>
+        <button class="btn btn-line btn-sm" type="submit" formaction="/cart/remove">Remove</button>
+      </div>
+    </form>
+  <% }); %>
+
+  <div style="margin-top:1.5rem;">
+    <a class="btn btn-line" href="/">Continue Shopping</a>
+  </div>
+
+  <div class="cart-summary">
+    <div class="summary-line"><span>Subtotal</span><span><%= money(subtotal) %></span></div>
+    <div class="summary-line"><span>Shipping</span><span><%= shipping > 0 ? money(shipping) : 'Free' %></span></div>
+    <div class="summary-line total"><span>Total</span><span><%= money(subtotal + shipping) %></span></div>
+    <% if (shipping > 0) { %>
+      <p class="form-help">Add <%= money(FREE_SHIPPING_THRESHOLD - subtotal) %> more for free shipping.</p>
+    <% } %>
+    <a class="btn btn-solid" style="width:100%;text-align:center;margin-top:1rem;" href="/checkout">Proceed to Checkout</a>
+  </div>
+<% } %>
+
+<%- include('partials/footer') %>

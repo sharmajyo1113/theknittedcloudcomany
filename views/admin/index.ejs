@@ -1,0 +1,56 @@
+<%- include('../partials/admin_header') %>
+
+<h1>Dashboard</h1>
+
+<div class="stat-grid">
+  <div class="stat-card"><b><%= totalOrders %></b><span>Total Orders</span></div>
+  <div class="stat-card"><b><%= money(revenue) %></b><span>Revenue</span></div>
+  <div class="stat-card"><b><%= totalProducts %></b><span>Products</span></div>
+  <div class="stat-card"><b><%= totalCustomers %></b><span>Customers</span></div>
+</div>
+
+<div class="section-title"><h2>Orders by Status</h2></div>
+<div class="chip-row">
+  <% statuses.forEach(function(s) { %>
+    <span class="badge badge-<%= s %>"><%= s[0].toUpperCase() + s.slice(1) %>: <%= statusMap[s] || 0 %></span>
+  <% }); %>
+</div>
+
+<div class="section-title"><h2>Recent Orders</h2><a href="/admin/orders">View all →</a></div>
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Order</th><th>Customer</th><th>Total</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+      <% recentOrders.forEach(function(o) { %>
+        <tr>
+          <td>#<%= o.id %></td>
+          <td><%= o.customer_name %></td>
+          <td><%= money(o.total) %></td>
+          <td><span class="badge badge-<%= o.status %>"><%= o.status[0].toUpperCase() + o.status.slice(1) %></span></td>
+          <td><a href="/admin/orders/<%= o.id %>">View</a></td>
+        </tr>
+      <% }); %>
+      <% if (!recentOrders.length) { %><tr><td colspan="5">No orders yet.</td></tr><% } %>
+    </tbody>
+  </table>
+</div>
+
+<% if (lowStock.length) { %>
+  <div class="section-title"><h2>Low Stock</h2><a href="/admin/products">Manage products →</a></div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Product</th><th>Stock</th><th></th></tr></thead>
+      <tbody>
+        <% lowStock.forEach(function(p) { %>
+          <tr>
+            <td><%= p.name %></td>
+            <td><%= p.stock %></td>
+            <td><a href="/admin/products/<%= p.id %>/edit">Edit</a></td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+<% } %>
+
+<%- include('../partials/admin_footer') %>

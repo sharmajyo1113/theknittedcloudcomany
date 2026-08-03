@@ -1,0 +1,60 @@
+<%- include('partials/header') %>
+
+<% if (!product) { %>
+  <div class="empty-state"><h3>We couldn't find that product.</h3><p><a href="/">Back to the shop</a></p></div>
+<% } else { %>
+
+<p><a href="/">Shop</a> <% if (product.category_slug) { %>/ <a href="/?category=<%= product.category_slug %>"><%= product.category_name %></a><% } %> / <%= product.name %></p>
+
+<div class="product-detail">
+  <div class="prod-swatch">
+    <% if (product.image_path) { %>
+      <img src="<%= product.image_path %>" alt="<%= product.name %>">
+    <% } else { %>
+      <%- productIconSvg(product.icon, 260) %>
+    <% } %>
+  </div>
+  <div>
+    <h1><%= product.name %></h1>
+    <p class="price"><%= money(product.price) %></p>
+    <p style="color:var(--ink-soft);white-space:pre-line"><%= product.description %></p>
+
+    <% if (product.stock === 0) { %>
+      <p class="stock-out"><strong>Out of stock</strong> — check back soon.</p>
+    <% } else { %>
+      <% if (product.stock <= 3) { %>
+        <p class="stock-low">Only <%= product.stock %> left in stock.</p>
+      <% } %>
+      <form method="post" action="/cart/add" style="display:flex;gap:0.8rem;align-items:flex-end;margin-top:1.2rem;">
+        <%- csrfField() %>
+        <input type="hidden" name="product_id" value="<%= product.id %>">
+        <input type="hidden" name="redirect" value="/products/<%= product.slug %>">
+        <div class="field" style="margin-bottom:0;">
+          <label for="qty">Quantity</label>
+          <input class="qty-input" type="number" id="qty" name="quantity" value="1" min="1" max="<%= product.stock %>">
+        </div>
+        <button class="btn btn-solid" type="submit">Add to Cart</button>
+      </form>
+    <% } %>
+
+    <% if (product.sku) { %><p class="form-help" style="margin-top:1.5rem;">SKU: <%= product.sku %></p><% } %>
+  </div>
+</div>
+
+<% if (related.length) { %>
+  <div class="section-title"><h2>You might also like</h2></div>
+  <div class="prod-grid">
+    <% related.forEach(function(p) { %>
+      <a class="prod-card" href="/products/<%= p.slug %>">
+        <div class="prod-swatch">
+          <% if (p.image_path) { %><img src="<%= p.image_path %>" alt="<%= p.name %>"><% } else { %><%- productIconSvg(p.icon, 96) %><% } %>
+        </div>
+        <h3><%= p.name %></h3>
+        <span class="price"><%= money(p.price) %></span>
+      </a>
+    <% }); %>
+  </div>
+<% } %>
+
+<% } %>
+<%- include('partials/footer') %>

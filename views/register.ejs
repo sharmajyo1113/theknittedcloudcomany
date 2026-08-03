@@ -1,0 +1,30 @@
+<%- include('partials/header') %>
+
+<h1>Create an Account</h1>
+<div class="form-card">
+  <% errors.forEach(function(err) { %><div class="alert alert-error"><%= err %></div><% }); %>
+  <form method="post" action="/register">
+    <%- csrfField() %>
+    <div class="field">
+      <label for="name">Full Name</label>
+      <input type="text" id="name" name="name" value="<%= name %>" required>
+    </div>
+    <div class="field">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" value="<%= email %>" required>
+    </div>
+    <div class="field">
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" minlength="8" required>
+      <div class="form-help">At least 8 characters.</div>
+    </div>
+    <div class="field">
+      <label for="password_confirm">Confirm Password</label>
+      <input type="password" id="password_confirm" name="password_confirm" minlength="8" required>
+    </div>
+    <button class="btn btn-solid" type="submit" style="width:100%;">Create Account</button>
+  </form>
+  <p style="margin-top:1.2rem;font-size:0.9rem;">Already have an account? <a href="/login">Log in</a></p>
+</div>
+
+<%- include('partials/footer') %>

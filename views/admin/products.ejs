@@ -1,0 +1,33 @@
+<%- include('../partials/admin_header') %>
+
+<div class="section-title">
+  <h1>Products</h1>
+  <a class="btn btn-solid" href="/admin/products/new">+ Add Product</a>
+</div>
+
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Product</th><th>Category</th><th>Price</th><th>Stock</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+      <% products.forEach(function(p) { %>
+        <tr>
+          <td><%= p.name %></td>
+          <td><%= p.category_name || '—' %></td>
+          <td><%= money(p.price) %></td>
+          <td><%= p.stock %></td>
+          <td><%- p.is_active ? '<span class="badge badge-delivered">Active</span>' : '<span class="badge badge-cancelled">Hidden</span>' %></td>
+          <td style="display:flex;gap:0.6rem;">
+            <a href="/admin/products/<%= p.id %>/edit">Edit</a>
+            <form method="post" action="/admin/products/<%= p.id %>/delete" onsubmit="return confirm('Delete this product? This cannot be undone.');">
+              <%- csrfField() %>
+              <button class="btn btn-sm btn-danger" type="submit">Delete</button>
+            </form>
+          </td>
+        </tr>
+      <% }); %>
+      <% if (!products.length) { %><tr><td colspan="6">No products yet.</td></tr><% } %>
+    </tbody>
+  </table>
+</div>
+
+<%- include('../partials/admin_footer') %>

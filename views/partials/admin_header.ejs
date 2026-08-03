@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title><%= typeof pageTitle !== 'undefined' ? pageTitle : 'Admin — The Knitted Cloud Company' %></title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<%- productIconDefs() %>
+<%
+  const __nav = [
+    ['/admin', 'Dashboard'],
+    ['/admin/products', 'Products'],
+    ['/admin/categories', 'Categories'],
+    ['/admin/orders', 'Orders'],
+    ['/admin/customers', 'Customers'],
+  ];
+%>
+<div class="admin-shell">
+  <aside class="admin-sidebar">
+    <div class="brand">The Knitted Cloud Co.<br><small style="font-weight:400;color:var(--ink-soft);">Admin</small></div>
+    <nav>
+      <% __nav.forEach(function(item) { %>
+        <a href="<%= item[0] %>" class="<%= currentPath === item[0] ? 'active' : '' %>"><%= item[1] %></a>
+      <% }); %>
+      <a href="/" style="margin-top:1rem;">↩ View Store</a>
+      <a href="/admin/logout">Log Out</a>
+    </nav>
+  </aside>
+  <main class="admin-main">
+    <% flashMessages.forEach(function(f) { %>
+      <div class="alert alert-<%= f.type %>"><%= f.message %></div>
+    <% }); %>
