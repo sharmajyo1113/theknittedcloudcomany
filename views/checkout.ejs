@@ -1,0 +1,54 @@
+<%- include('partials/header') %>
+
+<h1>Checkout</h1>
+
+<div class="product-detail">
+  <div>
+    <% errors.forEach(function(err) { %><div class="alert alert-error"><%= err %></div><% }); %>
+    <form method="post" action="/checkout">
+      <%- csrfField() %>
+      <div class="field">
+        <label for="shipping_name">Recipient Name</label>
+        <input type="text" id="shipping_name" name="shipping_name" value="<%= form.shipping_name %>" required>
+      </div>
+      <div class="field">
+        <label for="shipping_address">Address</label>
+        <input type="text" id="shipping_address" name="shipping_address" value="<%= form.shipping_address %>" required>
+      </div>
+      <div class="field field-row">
+        <div>
+          <label for="shipping_city">City</label>
+          <input type="text" id="shipping_city" name="shipping_city" value="<%= form.shipping_city %>" required>
+        </div>
+        <div>
+          <label for="shipping_postcode">Postcode</label>
+          <input type="text" id="shipping_postcode" name="shipping_postcode" value="<%= form.shipping_postcode %>" required>
+        </div>
+      </div>
+      <div class="field">
+        <label for="shipping_phone">Phone</label>
+        <input type="tel" id="shipping_phone" name="shipping_phone" value="<%= form.shipping_phone %>" required>
+      </div>
+      <div class="field">
+        <label for="notes">Order Notes (optional)</label>
+        <textarea id="notes" name="notes" rows="3"><%= form.notes %></textarea>
+      </div>
+
+      <div class="alert alert-info">Payment: <strong>Cash on Delivery</strong> — pay when your order arrives. No card details needed.</div>
+
+      <button class="btn btn-solid" type="submit" style="width:100%;">Place Order — <%= money(subtotal + shipping) %></button>
+    </form>
+  </div>
+
+  <div class="cart-summary" style="margin-left:0;max-width:none;">
+    <h3>Order Summary</h3>
+    <% items.forEach(function(item) { const p = item.product; %>
+      <div class="summary-line"><span><%= p.name %> × <%= item.quantity %></span><span><%= money(item.lineTotal) %></span></div>
+    <% }); %>
+    <div class="summary-line"><span>Subtotal</span><span><%= money(subtotal) %></span></div>
+    <div class="summary-line"><span>Shipping</span><span><%= shipping > 0 ? money(shipping) : 'Free' %></span></div>
+    <div class="summary-line total"><span>Total</span><span><%= money(subtotal + shipping) %></span></div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

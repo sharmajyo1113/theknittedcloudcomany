@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title><%= typeof pageTitle !== 'undefined' ? pageTitle : 'The Knitted Cloud Company' %></title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<%- productIconDefs() %>
+
+<header class="site-header">
+  <div class="wrap nav-row">
+    <a class="brand" href="/">
+      <svg viewBox="0 0 40 40" fill="none" width="28" height="28">
+        <path d="M9 24c-3.3 0-6-2.6-6-6 0-3 2.2-5.5 5.1-5.9C8.7 8.6 12 6 16 6c4.3 0 8 2.9 9 6.9 3.4.3 6 3.1 6 6.6 0 3.6-3 6.5-6.7 6.5H9z" fill="var(--sky)"/>
+      </svg>
+      The Knitted Cloud Co.
+    </a>
+    <nav class="primary">
+      <a href="/">Shop</a>
+      <a href="/about">Our Story</a>
+      <% if (user) { %>
+        <a href="/account">My Account</a>
+        <% if (user.role === 'admin') { %><a href="/admin">Admin</a><% } %>
+        <a href="/logout">Log Out</a>
+      <% } else { %>
+        <a href="/login">Log In</a>
+        <a href="/register">Register</a>
+      <% } %>
+    </nav>
+    <a class="cart-link" href="/cart">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 8h12l-1 12H7L6 8z"/><path d="M9 8V6a3 3 0 016 0v2" stroke-linecap="round"/></svg>
+      Cart<% if (cartCount > 0) { %> <span class="cart-count"><%= cartCount %></span><% } %>
+    </a>
+  </div>
+</header>
+
+<main class="wrap page">
+<% flashMessages.forEach(function(f) { %>
+  <div class="alert alert-<%= f.type %>"><%= f.message %></div>
+<% }); %>

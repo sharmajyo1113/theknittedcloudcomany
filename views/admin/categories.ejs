@@ -1,0 +1,43 @@
+<%- include('../partials/admin_header') %>
+
+<h1>Categories</h1>
+
+<% errors.forEach(function(err) { %><div class="alert alert-error"><%= err %></div><% }); %>
+
+<div class="table-wrap" style="margin-bottom:2rem;">
+  <table>
+    <thead><tr><th>Name</th><th>Slug</th><th>Products</th><th></th></tr></thead>
+    <tbody>
+      <% categories.forEach(function(c) { %>
+        <tr>
+          <td><%= c.name %></td>
+          <td><%= c.slug %></td>
+          <td><%= c.product_count %></td>
+          <td>
+            <form method="post" action="/admin/categories/<%= c.id %>/delete" onsubmit="return confirm('Delete this category? Its products will become uncategorized.');">
+              <%- csrfField() %>
+              <button class="btn btn-sm btn-danger" type="submit">Delete</button>
+            </form>
+          </td>
+        </tr>
+      <% }); %>
+      <% if (!categories.length) { %><tr><td colspan="4">No categories yet.</td></tr><% } %>
+    </tbody>
+  </table>
+</div>
+
+<h2>Add Category</h2>
+<form method="post" action="/admin/categories" style="max-width:460px;">
+  <%- csrfField() %>
+  <div class="field">
+    <label for="name">Name</label>
+    <input type="text" id="name" name="name" required>
+  </div>
+  <div class="field">
+    <label for="description">Description</label>
+    <textarea id="description" name="description" rows="2"></textarea>
+  </div>
+  <button class="btn btn-solid" type="submit">Add Category</button>
+</form>
+
+<%- include('../partials/admin_footer') %>

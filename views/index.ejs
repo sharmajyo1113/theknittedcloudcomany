@@ -1,0 +1,85 @@
+<%- include('partials/header') %>
+<%
+  function buildQuery(overrides) {
+    const base = { category: query.category || '', q: query.q || '', sort: query.sort || '', page: query.page || '' };
+    const merged = Object.assign({}, base, overrides);
+    const parts = [];
+    for (const key in merged) {
+      if (merged[key] !== '' && merged[key] !== null && merged[key] !== undefined) {
+        parts.push(encodeURIComponent(key) + '=' + encodeURIComponent(merged[key]));
+      }
+    }
+    return parts.join('&');
+  }
+%>
+
+<div class="toolbar">
+  <div>
+    <h1><%= activeCategory ? activeCategory.name : 'Shop the Collection' %></h1>
+    <p style="color:var(--ink-soft)"><%= activeCategory ? (activeCategory.description || '') : 'Heirloom-soft toys, blankets and nursery knits.' %></p>
+  </div>
+  <form method="get" action="/" style="display:flex;gap:0.5rem;">
+    <% if (activeCategory) { %><input type="hidden" name="category" value="<%= activeCategory.slug %>"><% } %>
+    <input type="search" name="q" placeholder="Search products…" value="<%= search %>" style="width:220px;">
+    <button class="btn btn-line" type="submit">Search</button>
+  </form>
+</div>
+
+<div class="chip-row" style="margin-bottom:1.5rem;">
+  <a class="chip <%= !activeCategory ? 'active' : '' %>" href="/?<%= buildQuery({ category: '', page: '' }) %>">All</a>
+  <% categories.forEach(function(c) { %>
+    <a class="chip <%= (activeCategory && activeCategory.id === c.id) ? 'active' : '' %>" href="/?<%= buildQuery({ category: c.slug, page: '' }) %>"><%= c.name %></a>
+  <% }); %>
+</div>
+
+<div class="toolbar" style="margin-bottom:0.8rem;">
+  <span style="color:var(--ink-soft);font-size:0.88rem;"><%= total %> product<%= total === 1 ? '' : 's' %></span>
+  <form method="get" action="/">
+    <% if (activeCategory) { %><input type="hidden" name="category" value="<%= activeCategory.slug %>"><% } %>
+    <% if (search !== '') { %><input type="hidden" name="q" value="<%= search %>"><% } %>
+    <select name="sort" onchange="this.form.submit()">
+      <option value="newest" <%= sort === 'newest' ? 'selected' : '' %>>Newest</option>
+      <option value="price_asc" <%= sort === 'price_asc' ? 'selected' : '' %>>Price: Low to High</option>
+      <option value="price_desc" <%= sort === 'price_desc' ? 'selected' : '' %>>Price: High to Low</option>
+      <option value="name_asc" <%= sort === 'name_asc' ? 'selected' : '' %>>Name: A–Z</option>
+    </select>
+  </form>
+</div>
+
+<% if (!products.length) { %>
+  <div class="empty-state">
+    <h3>No products found</h3>
+    <p>Try a different search or category.</p>
+  </div>
+<% } else { %>
+  <div class="prod-grid">
+    <% products.forEach(function(p) { %>
+      <a class="prod-card" href="/products/<%= p.slug %>">
+        <div class="prod-swatch">
+          <% if (p.image_path) { %>
+            <img src="<%= p.image_path %>" alt="<%= p.name %>">
+          <% } else { %>
+            <%- productIconSvg(p.icon, 96) %>
+          <% } %>
+        </div>
+        <h3><%= p.name %></h3>
+        <span class="price"><%= money(p.price) %></span>
+        <% if (p.stock === 0) { %>
+          <span class="stock-out">Out of stock</span>
+        <% } else if (p.stock <= 3) { %>
+          <span class="stock-low">Only <%= p.stock %> left</span>
+        <% } %>
+      </a>
+    <% }); %>
+  </div>
+
+  <% if (totalPages > 1) { %>
+    <div class="chip-row" style="margin-top:2rem;justify-content:center;">
+      <% for (let i = 1; i <= totalPages; i++) { %>
+        <a class="chip <%= i === page ? 'active' : '' %>" href="/?<%= buildQuery({ page: i }) %>"><%= i %></a>
+      <% } %>
+    </div>
+  <% } %>
+<% } %>
+
+<%- include('partials/footer') %>

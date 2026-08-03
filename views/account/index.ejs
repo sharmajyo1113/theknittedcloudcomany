@@ -1,0 +1,31 @@
+<%- include('../partials/header') %>
+
+<h1>My Account</h1>
+<p style="color:var(--ink-soft)">Signed in as <strong><%= user.name %></strong> (<%= user.email %>)</p>
+
+<div class="section-title"><h2>Recent Orders</h2><a href="/account/orders">View all →</a></div>
+
+<% if (!recentOrders.length) { %>
+  <div class="empty-state">
+    <h3>No orders yet</h3>
+    <p><a href="/">Start shopping →</a></p>
+  </div>
+<% } else { %>
+  <% recentOrders.forEach(function(order) { %>
+    <div class="order-card">
+      <div class="head">
+        <div>
+          <strong>Order #<%= order.id %></strong>
+          <span style="color:var(--ink-soft);font-size:0.85rem;"> — <%= order.created_at %></span>
+        </div>
+        <span class="badge badge-<%= order.status %>"><%= order.status[0].toUpperCase() + order.status.slice(1) %></span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span><%= money(order.total) %></span>
+        <a href="/account/orders/<%= order.id %>">View details →</a>
+      </div>
+    </div>
+  <% }); %>
+<% } %>
+
+<%- include('../partials/footer') %>

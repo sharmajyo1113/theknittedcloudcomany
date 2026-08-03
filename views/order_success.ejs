@@ -1,0 +1,34 @@
+<%- include('partials/header') %>
+
+<% if (!order) { %>
+  <div class="empty-state"><h3>We couldn't find that order.</h3></div>
+<% } else { %>
+
+<div style="max-width:600px;margin:0 auto;text-align:center;">
+  <h1>Thank you, <%= order.shipping_name %>!</h1>
+  <p style="color:var(--ink-soft)">Your order <strong>#<%= order.id %></strong> has been placed and will be paid on delivery.</p>
+</div>
+
+<div class="order-card" style="max-width:600px;margin:2rem auto 0;">
+  <div class="head">
+    <strong>Order #<%= order.id %></strong>
+    <span class="badge badge-<%= order.status %>"><%= order.status[0].toUpperCase() + order.status.slice(1) %></span>
+  </div>
+  <% items.forEach(function(item) { %>
+    <div class="summary-line"><span><%= item.product_name %> × <%= item.quantity %></span><span><%= money(item.line_total) %></span></div>
+  <% }); %>
+  <div class="summary-line"><span>Subtotal</span><span><%= money(order.subtotal) %></span></div>
+  <div class="summary-line"><span>Shipping</span><span><%= order.shipping_fee > 0 ? money(order.shipping_fee) : 'Free' %></span></div>
+  <div class="summary-line total"><span>Total</span><span><%= money(order.total) %></span></div>
+  <p style="margin-top:1rem;color:var(--ink-soft);font-size:0.88rem;">
+    Shipping to <%= order.shipping_address %>, <%= order.shipping_city %> <%= order.shipping_postcode %>
+  </p>
+</div>
+
+<div style="text-align:center;margin-top:2rem;">
+  <a class="btn btn-solid" href="/">Continue Shopping</a>
+  <a class="btn btn-line" href="/account/orders">View Order History</a>
+</div>
+
+<% } %>
+<%- include('partials/footer') %>

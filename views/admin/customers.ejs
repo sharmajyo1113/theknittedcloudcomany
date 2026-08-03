@@ -1,0 +1,23 @@
+<%- include('../partials/admin_header') %>
+
+<h1>Customers</h1>
+
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Name</th><th>Email</th><th>Joined</th><th>Orders</th><th>Total Spent</th></tr></thead>
+    <tbody>
+      <% customers.forEach(function(c) { %>
+        <tr>
+          <td><%= c.name %></td>
+          <td><%= c.email %></td>
+          <td><%= c.created_at %></td>
+          <td><%= c.order_count %></td>
+          <td><%= money(c.total_spent) %></td>
+        </tr>
+      <% }); %>
+      <% if (!customers.length) { %><tr><td colspan="5">No customers yet.</td></tr><% } %>
+    </tbody>
+  </table>
+</div>
+
+<%- include('../partials/admin_footer') %>
