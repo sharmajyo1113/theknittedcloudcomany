@@ -1,0 +1,98 @@
+// Using the legacy JS generator deliberately: this API is plain CommonJS, and the
+// new default "prisma-client" generator only emits TypeScript source that would
+// need a build/transpile step this project doesn't otherwise have.
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  CUSTOMER
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+model User {
+  id          String   @id @default(cuid())
+  name        String
+  email       String   @unique
+  // Set once a user signs in through Firebase Auth; null for accounts that
+  // only exist as guests/legacy rows before they ever log in.
+  firebaseUid String?  @unique
+  role        Role     @default(CUSTOMER)
+  createdAt   DateTime @default(now())
+  orders      Order[]
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  description String?
+  products    Product[]
+}
+
+model Product {
+  id          String      @id @default(cuid())
+  category    Category?   @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  categoryId  String?
+  name        String
+  slug        String      @unique
+  sku         String?
+  description String      @default("")
+  price       Decimal     @db.Decimal(10, 2)
+  stock       Int         @default(0)
+  imagePath   String?
+  icon        String      @default("bear")
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  orderItems  OrderItem[]
+
+  @@index([categoryId])
+}
+
+model Order {
+  id                    String      @id @default(cuid())
+  user                  User        @relation(fields: [userId], references: [id])
+  userId                String
+  status                OrderStatus @default(PENDING)
+  subtotal              Decimal     @db.Decimal(10, 2)
+  shippingFee           Decimal     @db.Decimal(10, 2) @default(0)
+  total                 Decimal     @db.Decimal(10, 2)
+  shippingName          String
+  shippingAddress       String
+  shippingCity          String
+  shippingPostcode      String
+  shippingPhone         String
+  paymentMethod         String      @default("stripe")
+  stripePaymentIntentId String?
+  notes                 String?
+  createdAt             DateTime    @default(now())
+  items                 OrderItem[]
+
+  @@index([userId])
+}
+
+model OrderItem {
+  id          String   @id @default(cuid())
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId     String
+  product     Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  productId   String?
+  productName String
+  unitPrice   Decimal  @db.Decimal(10, 2)
+  quantity    Int
+  lineTotal   Decimal  @db.Decimal(10, 2)
+
+  @@index([orderId])
+}

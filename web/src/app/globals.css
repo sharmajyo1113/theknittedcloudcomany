@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+:root {
+  --color-fog: #ffffff;
+  --color-fog-card: #F5F5F6;
+  --color-ink: #202024;
+  --color-ink-soft: #6B6B72;
+  --color-sky: #71889F;
+  --color-sky-deep: #4E6377;
+  --color-gold: #C98F35;
+  --color-line: #E3E3E6;
+  --color-danger: #B3453D;
+  --color-success: #4C7A55;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-fog: #1C1C1F;
+    --color-fog-card: #262629;
+    --color-ink: #EDEDEF;
+    --color-ink-soft: #9C9CA3;
+    --color-sky: #93A9BF;
+    --color-sky-deep: #B7C7D8;
+    --color-gold: #E3AC57;
+    --color-line: #38383C;
+  }
+}
+
+@theme inline {
+  --color-fog: var(--color-fog);
+  --color-fog-card: var(--color-fog-card);
+  --color-ink: var(--color-ink);
+  --color-ink-soft: var(--color-ink-soft);
+  --color-sky: var(--color-sky);
+  --color-sky-deep: var(--color-sky-deep);
+  --color-gold: var(--color-gold);
+  --color-line: var(--color-line);
+  --color-danger: var(--color-danger);
+  --color-success: var(--color-success);
+  --font-serif: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --font-sans: -apple-system, "Segoe UI", "Avenir Next", "Helvetica Neue", Arial, sans-serif;
+}
+
+body {
+  background: var(--color-fog);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
