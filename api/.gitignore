@@ -3,3 +3,10 @@ node_modules
 .env
 
 /generated/prisma
+
+# Prisma CLI's auto-scaffolded AI-agent reference docs (from `prisma init`) —
+# tool-vendor documentation, not project code.
+/.agents
+/.claude
+/.windsurf
+skills-lock.json
