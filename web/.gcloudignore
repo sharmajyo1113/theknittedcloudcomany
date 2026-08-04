@@ -1,0 +1,17 @@
+# Without this file, `gcloud run deploy --source` falls back to .gitignore
+# to decide what to upload — which excludes .env* and silently dropped
+# .env.production from every build, even though .dockerignore allowed it.
+# .dockerignore only governs the Docker build step; this governs the earlier
+# "what gets uploaded as source" step, and it takes priority.
+
+.git
+.gitignore
+node_modules/
+.next/
+npm-debug.log*
+
+# Explicitly keep .env.production (needed at build time for NEXT_PUBLIC_*
+# values) while still excluding the local-only env files.
+.env
+.env.local
+.env.development

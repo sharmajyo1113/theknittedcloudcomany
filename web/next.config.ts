@@ -7,6 +7,8 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: __dirname,
   },
+  // Lean, self-contained server build for the Cloud Run container.
+  output: "standalone",
 };
 
 export default nextConfig;
