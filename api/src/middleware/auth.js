@@ -1,12 +1,13 @@
 'use strict';
 
 const { verifyIdToken } = require('../lib/firebaseAdmin');
-const { prisma } = require('../lib/prisma');
+const { getDb } = require('../lib/firestore');
 
 /**
  * Verifies the Firebase ID token in `Authorization: Bearer <token>`, then finds
- * (or lazily creates) the matching Postgres User row and attaches it as req.user.
- * A brand-new Firebase sign-in has no Postgres row yet — this is where one is born.
+ * (or lazily creates) the matching Firestore user doc and attaches it as req.user.
+ * A brand-new Firebase sign-in has no Firestore doc yet — this is where one is born.
+ * Doc ID is the Firebase UID itself, so lookup is a direct get, no query needed.
  */
 async function requireAuth(req, res, next) {
     const header = req.headers.authorization || '';
@@ -17,16 +18,23 @@ async function requireAuth(req, res, next) {
 
     try {
         const decoded = await verifyIdToken(token);
-        let user = await prisma.user.findUnique({ where: { firebaseUid: decoded.uid } });
+        const db = getDb();
+        const ref = db.collection('users').doc(decoded.uid);
+        const snap = await ref.get();
 
-        if (!user) {
-            user = await prisma.user.create({
-                data: {
-                    firebaseUid: decoded.uid,
-                    email: decoded.email || `${decoded.uid}@no-email.local`,
-                    name: decoded.name || decoded.email || 'Customer',
-                },
-            });
+        let user;
+        if (snap.exists) {
+            user = { id: snap.id, ...snap.data() };
+        } else {
+            const data = {
+                firebaseUid: decoded.uid,
+                email: decoded.email || `${decoded.uid}@no-email.local`,
+                name: decoded.name || decoded.email || 'Customer',
+                role: 'CUSTOMER',
+                createdAt: new Date().toISOString(),
+            };
+            await ref.set(data);
+            user = { id: decoded.uid, ...data };
         }
 
         req.user = user;

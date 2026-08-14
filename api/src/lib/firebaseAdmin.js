@@ -38,4 +38,4 @@ async function verifyIdToken(idToken) {
     return getAuth(getFirebaseApp()).verifyIdToken(idToken);
 }
 
-module.exports = { verifyIdToken };
+module.exports = { verifyIdToken, getFirebaseApp };

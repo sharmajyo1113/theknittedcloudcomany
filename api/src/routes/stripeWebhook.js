@@ -1,7 +1,7 @@
 'use strict';
 
 const express = require('express');
-const { prisma } = require('../lib/prisma');
+const { getDb } = require('../lib/firestore');
 const { getStripe } = require('../lib/stripe');
 
 const router = express.Router();
@@ -20,34 +20,41 @@ router.post('/stripe/webhook', express.raw({ type: 'application/json' }), async 
         return res.status(400).send(`Webhook signature verification failed: ${err.message}`);
     }
 
+    const db = getDb();
+
     if (event.type === 'payment_intent.succeeded') {
         const paymentIntent = event.data.object;
-        const order = await prisma.order.findFirst({
-            where: { stripePaymentIntentId: paymentIntent.id },
-            include: { items: true },
-        });
+        const snap = await db.collection('orders').where('stripePaymentIntentId', '==', paymentIntent.id).limit(1).get();
 
         // Already processed (Stripe can redeliver webhooks) or order not found — no-op either way.
-        if (order && order.status === 'PENDING') {
-            await prisma.$transaction(async (tx) => {
-                for (const item of order.items) {
-                    if (!item.productId) continue;
-                    await tx.product.updateMany({
-                        where: { id: item.productId, stock: { gte: item.quantity } },
-                        data: { stock: { decrement: item.quantity } },
-                    });
+        if (!snap.empty && snap.docs[0].data().status === 'PENDING') {
+            const orderRef = snap.docs[0].ref;
+            const itemsSnap = await orderRef.collection('items').get();
+
+            await db.runTransaction(async (tx) => {
+                const productRefs = itemsSnap.docs.filter((d) => d.data().productId).map((d) => db.collection('products').doc(d.data().productId));
+                const productDocs = await Promise.all(productRefs.map((ref) => tx.get(ref)));
+
+                for (let i = 0; i < productDocs.length; i++) {
+                    const productDoc = productDocs[i];
+                    const item = itemsSnap.docs[i].data();
+                    if (!productDoc.exists) continue;
+                    const currentStock = productDoc.data().stock;
+                    if (currentStock >= item.quantity) {
+                        tx.update(productRefs[i], { stock: currentStock - item.quantity });
+                    }
                 }
-                await tx.order.update({ where: { id: order.id }, data: { status: 'PROCESSING' } });
+                tx.update(orderRef, { status: 'PROCESSING' });
             });
         }
     }
 
     if (event.type === 'payment_intent.payment_failed') {
         const paymentIntent = event.data.object;
-        await prisma.order.updateMany({
-            where: { stripePaymentIntentId: paymentIntent.id, status: 'PENDING' },
-            data: { status: 'CANCELLED' },
-        });
+        const snap = await db.collection('orders').where('stripePaymentIntentId', '==', paymentIntent.id).limit(1).get();
+        if (!snap.empty && snap.docs[0].data().status === 'PENDING') {
+            await snap.docs[0].ref.update({ status: 'CANCELLED' });
+        }
     }
 
     res.json({ received: true });

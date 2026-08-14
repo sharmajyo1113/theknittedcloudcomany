@@ -1,57 +1,64 @@
 'use strict';
 
 const express = require('express');
-const { prisma } = require('../lib/prisma');
+const { getDb } = require('../lib/firestore');
 
 const router = express.Router();
 const PER_PAGE = 8;
 
-function serializeProduct(p) {
-    return {
-        ...p,
-        price: Number(p.price),
-        category: p.category ? { id: p.category.id, name: p.category.name, slug: p.category.slug } : null,
-    };
+// Firestore doesn't support case-insensitive `contains` or combining arbitrary
+// equality + range filters without composite indexes, and the catalog here is
+// small — so we fetch active products once and filter/sort/paginate in memory
+// rather than fighting Firestore's query model.
+async function fetchActiveProducts(db) {
+    const snap = await db.collection('products').where('isActive', '==', true).get();
+    return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+
+async function attachCategory(db, products) {
+    const categoryIds = [...new Set(products.map((p) => p.categoryId).filter(Boolean))];
+    const categories = new Map();
+    await Promise.all(
+        categoryIds.map(async (id) => {
+            const doc = await db.collection('categories').doc(id).get();
+            if (doc.exists) categories.set(id, { id: doc.id, name: doc.data().name, slug: doc.data().slug });
+        })
+    );
+    return products.map((p) => ({ ...p, category: p.categoryId ? categories.get(p.categoryId) || null : null }));
 }
 
 router.get('/products', async (req, res, next) => {
     try {
+        const db = getDb();
         const { category, q, sort = 'newest', page = '1', minPrice, maxPrice } = req.query;
         const pageNum = Math.max(1, parseInt(page, 10) || 1);
 
-        const where = { isActive: true };
-        if (category) where.category = { slug: category };
+        let products = await fetchActiveProducts(db);
+
+        if (category) products = products.filter((p) => p.categoryId === category);
         if (q) {
-            where.OR = [
-                { name: { contains: q, mode: 'insensitive' } },
-                { description: { contains: q, mode: 'insensitive' } },
-            ];
+            const needle = String(q).toLowerCase();
+            products = products.filter(
+                (p) => p.name.toLowerCase().includes(needle) || (p.description || '').toLowerCase().includes(needle)
+            );
         }
-        if (minPrice || maxPrice) {
-            where.price = {};
-            if (minPrice) where.price.gte = Number(minPrice);
-            if (maxPrice) where.price.lte = Number(maxPrice);
-        }
+        if (minPrice) products = products.filter((p) => p.price >= Number(minPrice));
+        if (maxPrice) products = products.filter((p) => p.price <= Number(maxPrice));
 
-        const orderBy =
-            { price_asc: { price: 'asc' }, price_desc: { price: 'desc' }, name_asc: { name: 'asc' } }[sort] || {
-                createdAt: 'desc',
-            };
+        const comparators = {
+            price_asc: (a, b) => a.price - b.price,
+            price_desc: (a, b) => b.price - a.price,
+            name_asc: (a, b) => a.name.localeCompare(b.name),
+        };
+        products.sort(comparators[sort] || ((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
 
-        const total = await prisma.product.count({ where });
+        const total = products.length;
         const totalPages = Math.max(1, Math.ceil(total / PER_PAGE));
         const currentPage = Math.min(pageNum, totalPages);
-
-        const products = await prisma.product.findMany({
-            where,
-            orderBy,
-            skip: (currentPage - 1) * PER_PAGE,
-            take: PER_PAGE,
-            include: { category: true },
-        });
+        const pageProducts = products.slice((currentPage - 1) * PER_PAGE, currentPage * PER_PAGE);
 
         res.json({
-            products: products.map(serializeProduct),
+            products: await attachCategory(db, pageProducts),
             total,
             totalPages,
             page: currentPage,
@@ -63,12 +70,11 @@ router.get('/products', async (req, res, next) => {
 
 router.get('/products/price-range', async (req, res, next) => {
     try {
-        const agg = await prisma.product.aggregate({
-            where: { isActive: true },
-            _min: { price: true },
-            _max: { price: true },
-        });
-        res.json({ min: Number(agg._min.price) || 0, max: Number(agg._max.price) || 0 });
+        const db = getDb();
+        const products = await fetchActiveProducts(db);
+        if (products.length === 0) return res.json({ min: 0, max: 0 });
+        const prices = products.map((p) => p.price);
+        res.json({ min: Math.min(...prices), max: Math.max(...prices) });
     } catch (err) {
         next(err);
     }
@@ -76,20 +82,20 @@ router.get('/products/price-range', async (req, res, next) => {
 
 router.get('/products/:slug', async (req, res, next) => {
     try {
-        const product = await prisma.product.findFirst({
-            where: { slug: req.params.slug, isActive: true },
-            include: { category: true },
-        });
-        if (!product) return res.status(404).json({ error: 'Product not found.' });
+        const db = getDb();
+        const doc = await db.collection('products').doc(req.params.slug).get();
+        if (!doc.exists || !doc.data().isActive) return res.status(404).json({ error: 'Product not found.' });
 
-        const related = product.categoryId
-            ? await prisma.product.findMany({
-                  where: { categoryId: product.categoryId, isActive: true, NOT: { id: product.id } },
-                  take: 4,
-              })
-            : [];
+        const product = { id: doc.id, ...doc.data() };
 
-        res.json({ product: serializeProduct(product), related: related.map(serializeProduct) });
+        let related = [];
+        if (product.categoryId) {
+            const snap = await db.collection('products').where('categoryId', '==', product.categoryId).where('isActive', '==', true).get();
+            related = snap.docs.map((d) => ({ id: d.id, ...d.data() })).filter((p) => p.id !== product.id).slice(0, 4);
+        }
+
+        const [serializedProduct] = await attachCategory(db, [product]);
+        res.json({ product: serializedProduct, related: await attachCategory(db, related) });
     } catch (err) {
         next(err);
     }
