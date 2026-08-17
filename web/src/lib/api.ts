@@ -118,4 +118,43 @@ export function shippingFeeFor(subtotal: number): number {
   return subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FLAT_FEE;
 }
 
+export type NewProduct = {
+  name: string;
+  categoryId: string;
+  sku?: string;
+  description: string;
+  price: number;
+  stock: number;
+  icon: string;
+  isActive?: boolean;
+  imagePath?: string | null;
+};
+
+export function fetchAdminProducts(token: string): Promise<{ products: Product[] }> {
+  return apiFetch('/api/admin/products', { headers: { Authorization: `Bearer ${token}` } });
+}
+
+export function createAdminProduct(token: string, product: NewProduct): Promise<{ product: Product }> {
+  return apiFetch('/api/admin/products', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify(product),
+  });
+}
+
+export async function uploadAdminImage(token: string, file: File): Promise<{ url: string }> {
+  const form = new FormData();
+  form.append('image', file);
+  const res = await fetch(`${API_URL}/api/admin/upload`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: form,
+  });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.error || `Upload failed with status ${res.status}`);
+  }
+  return res.json();
+}
+
 export { API_URL };

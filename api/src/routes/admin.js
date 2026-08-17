@@ -1,11 +1,28 @@
 'use strict';
 
 const express = require('express');
+const multer = require('multer');
 const { getDb } = require('../lib/firestore');
+const { uploadImage } = require('../lib/storage');
 const { requireAuth, requireAdmin } = require('../middleware/auth');
 
 const router = express.Router();
 router.use(requireAuth, requireAdmin);
+
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
+
+router.post('/upload', upload.single('image'), async (req, res, next) => {
+    try {
+        if (!req.file) return res.status(400).json({ error: 'No image file provided.' });
+        if (!req.file.mimetype.startsWith('image/')) {
+            return res.status(400).json({ error: 'File must be an image.' });
+        }
+        const url = await uploadImage(req.file.buffer, req.file.mimetype, req.file.originalname);
+        res.json({ url });
+    } catch (err) {
+        next(err);
+    }
+});
 
 function slugify(text) {
     return String(text)

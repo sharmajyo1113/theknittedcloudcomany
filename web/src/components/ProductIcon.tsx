@@ -19,28 +19,15 @@ export function ProductIconDefs() {
           <stop offset="55%" style={{ stopColor: 'var(--color-blush)' }} />
           <stop offset="100%" style={{ stopColor: 'color-mix(in srgb, var(--color-blush) 68%, var(--color-ink) 28%)' }} />
         </radialGradient>
-        {/* Knit "stockinette" stitch texture — a row of Vs, tiled, laid over each
-            shape via clipPath so every icon reads as knitted fabric rather than
-            a flat vector blob. */}
-        <pattern id="knitStitch" width="7" height="6" patternUnits="userSpaceOnUse">
-          <path
-            d="M0 5.5 L1.75 1.5 L3.5 5.5 L5.25 1.5 L7 5.5"
-            fill="none"
-            stroke="black"
-            strokeOpacity="0.16"
-            strokeWidth="0.7"
-            strokeLinecap="round"
-          />
-        </pattern>
-        <pattern id="knitStitchLight" width="7" height="6" patternUnits="userSpaceOnUse">
-          <path
-            d="M0 5.5 L1.75 1.5 L3.5 5.5 L5.25 1.5 L7 5.5"
-            fill="none"
-            stroke="white"
-            strokeOpacity="0.35"
-            strokeWidth="0.6"
-            strokeLinecap="round"
-          />
+        {/* Chunky crochet "bobble" texture — a staggered grid of little raised
+            nubs (dark shadow + light highlight per bump), tiled and laid over
+            each shape via clipPath so every icon reads as amigurumi stitching
+            rather than a flat vector blob. */}
+        <pattern id="crochetBobble" width="6.4" height="5.6" patternUnits="userSpaceOnUse">
+          <circle cx="1.6" cy="1.4" r="1.5" fill="black" opacity="0.14" />
+          <circle cx="1.25" cy="1.05" r="1.1" fill="white" opacity="0.3" />
+          <circle cx="4.8" cy="4.2" r="1.5" fill="black" opacity="0.14" />
+          <circle cx="4.45" cy="3.85" r="1.1" fill="white" opacity="0.3" />
         </pattern>
       </defs>
     </svg>
@@ -50,8 +37,7 @@ export function ProductIconDefs() {
 function Knit({ clipId, opacity = 1 }: { clipId: string; opacity?: number }) {
   return (
     <g clipPath={`url(#${clipId})`} opacity={opacity}>
-      <rect x="0" y="0" width="64" height="64" fill="url(#knitStitch)" />
-      <rect x="0" y="0" width="64" height="64" fill="url(#knitStitchLight)" transform="translate(0,3)" />
+      <rect x="0" y="0" width="64" height="64" fill="url(#crochetBobble)" />
     </g>
   );
 }
@@ -194,6 +180,10 @@ export function ProductIcon({ icon, size = 64 }: { icon: string; size?: number }
             <path d="M29 31a3 2 0 006 0" fill="var(--color-ink)" />
             <circle cx="18" cy="18" r="3.4" fill="color-mix(in srgb, var(--color-gold) 30%, white 45%)" opacity="0.8" />
             <circle cx="46" cy="18" r="3.4" fill="color-mix(in srgb, var(--color-gold) 30%, white 45%)" opacity="0.8" />
+            {/* signature ribbon bow */}
+            <ellipse cx="27" cy="42.5" rx="4.5" ry="3" transform="rotate(-25 27 42.5)" fill="color-mix(in srgb, var(--color-ink) 55%, var(--color-gold) 45%)" />
+            <ellipse cx="37" cy="42.5" rx="4.5" ry="3" transform="rotate(25 37 42.5)" fill="color-mix(in srgb, var(--color-ink) 55%, var(--color-gold) 45%)" />
+            <circle cx="32" cy="42.5" r="2.1" fill="color-mix(in srgb, var(--color-ink) 70%, var(--color-gold) 30%)" />
           </>
         );
     }
