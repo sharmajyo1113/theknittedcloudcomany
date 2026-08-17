@@ -23,7 +23,6 @@ export function Footer() {
           <h4 className="text-xs font-semibold uppercase tracking-wide text-ink-soft">Company</h4>
           <ul className="mt-3 space-y-2 text-sm">
             <li><Link href="/about">Our Story</Link></li>
-            <li><Link href="/journal">Journal</Link></li>
           </ul>
         </div>
         <div>
