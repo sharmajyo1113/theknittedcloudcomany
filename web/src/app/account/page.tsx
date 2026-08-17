@@ -3,20 +3,22 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
-import { fetchOrders, money, type Order } from '@/lib/api';
+import { fetchOrders, checkIsAdmin, money, type Order } from '@/lib/api';
 import { OrderStatusBadge } from '@/components/OrderStatusBadge';
 
 export default function AccountPage() {
   const { user, loading, getToken } = useAuth();
   const [orders, setOrders] = useState<Order[] | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     if (loading || !user) return;
     (async () => {
       const token = await getToken();
       if (!token) return;
-      const { orders } = await fetchOrders(token);
+      const [{ orders }, admin] = await Promise.all([fetchOrders(token), checkIsAdmin(token)]);
       setOrders(orders.slice(0, 5));
+      setIsAdmin(admin);
     })();
   }, [loading, user, getToken]);
 
@@ -29,6 +31,15 @@ export default function AccountPage() {
       <p className="mt-1 text-ink-soft">
         Signed in as <strong>{user.displayName || user.email}</strong> ({user.email})
       </p>
+
+      {isAdmin && (
+        <Link
+          href="/admin"
+          className="mt-4 inline-block rounded-full bg-gold px-5 py-2 text-sm font-semibold text-ink"
+        >
+          Go to Admin Portal →
+        </Link>
+      )}
 
       <div className="mt-8 flex items-end justify-between border-b border-line pb-4">
         <h2 className="text-xl">Recent Orders</h2>

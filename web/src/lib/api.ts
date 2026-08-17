@@ -134,6 +134,15 @@ export function fetchAdminProducts(token: string): Promise<{ products: Product[]
   return apiFetch('/api/admin/products', { headers: { Authorization: `Bearer ${token}` } });
 }
 
+export async function checkIsAdmin(token: string): Promise<boolean> {
+  try {
+    await apiFetch('/api/admin/dashboard', { headers: { Authorization: `Bearer ${token}` } });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export function createAdminProduct(token: string, product: NewProduct): Promise<{ product: Product }> {
   return apiFetch('/api/admin/products', {
     method: 'POST',
