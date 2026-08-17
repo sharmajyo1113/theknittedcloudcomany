@@ -14,11 +14,15 @@ export type Product = {
   category: { id: string; name: string; slug: string } | null;
 };
 
+export type CategoryType = 'standard' | 'featured' | 'new-arrival';
+
 export type Category = {
   id: string;
   name: string;
   slug: string;
   description: string | null;
+  type?: CategoryType;
+  imagePath?: string | null;
 };
 
 async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
@@ -177,14 +181,30 @@ export function fetchAdminCategories(token: string): Promise<{ categories: Admin
   return apiFetch('/api/admin/categories', { headers: { Authorization: `Bearer ${token}` } });
 }
 
-export function createAdminCategory(
-  token: string,
-  category: { name: string; description?: string }
-): Promise<{ category: Category }> {
+export type NewCategory = {
+  name: string;
+  description?: string;
+  type?: CategoryType;
+  imagePath?: string | null;
+};
+
+export function createAdminCategory(token: string, category: NewCategory): Promise<{ category: Category }> {
   return apiFetch('/api/admin/categories', {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}` },
     body: JSON.stringify(category),
+  });
+}
+
+export function updateAdminCategory(
+  token: string,
+  id: string,
+  patch: Partial<NewCategory>
+): Promise<{ category: Category }> {
+  return apiFetch(`/api/admin/categories/${id}`, {
+    method: 'PATCH',
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify(patch),
   });
 }
 

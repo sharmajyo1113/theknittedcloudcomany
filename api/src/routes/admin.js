@@ -190,15 +190,26 @@ router.get('/categories', async (req, res, next) => {
     }
 });
 
+const CATEGORY_TYPES = ['standard', 'featured', 'new-arrival'];
+
 router.post('/categories', async (req, res, next) => {
     try {
-        const { name, description } = req.body;
+        const { name, description, type, imagePath } = req.body;
         const slug = slugify(name || '');
         if (!name || !slug) return res.status(400).json({ error: 'Please provide a category name.' });
+        if (type !== undefined && !CATEGORY_TYPES.includes(type)) {
+            return res.status(400).json({ error: `type must be one of: ${CATEGORY_TYPES.join(', ')}.` });
+        }
 
         const db = getDb();
         const ref = db.collection('categories').doc(slug);
-        const category = { name, slug, description: description || null };
+        const category = {
+            name,
+            slug,
+            description: description || null,
+            type: type || 'standard',
+            imagePath: imagePath || null,
+        };
 
         try {
             await ref.create(category);
@@ -207,6 +218,29 @@ router.post('/categories', async (req, res, next) => {
             throw err;
         }
         res.status(201).json({ category: { id: ref.id, ...category } });
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.patch('/categories/:id', async (req, res, next) => {
+    try {
+        const { name, description, type, imagePath } = req.body;
+        if (type !== undefined && !CATEGORY_TYPES.includes(type)) {
+            return res.status(400).json({ error: `type must be one of: ${CATEGORY_TYPES.join(', ')}.` });
+        }
+
+        const data = {};
+        if (name !== undefined) data.name = name;
+        if (description !== undefined) data.description = description;
+        if (type !== undefined) data.type = type;
+        if (imagePath !== undefined) data.imagePath = imagePath;
+
+        const db = getDb();
+        const ref = db.collection('categories').doc(req.params.id);
+        await ref.update(data);
+        const doc = await ref.get();
+        res.json({ category: { id: doc.id, ...doc.data() } });
     } catch (err) {
         next(err);
     }

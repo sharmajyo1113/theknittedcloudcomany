@@ -32,24 +32,41 @@ export default async function HomePage() {
     fetchSlides(),
   ]);
 
+  // Categories explicitly marked "Featured" in the admin appear here; if
+  // none have been marked yet, fall back to the first two so this section
+  // isn't empty on a freshly-configured site.
+  const featured = categories.filter((c) => c.type === "featured");
+  const favourites = featured.length > 0 ? featured : categories.slice(0, 2);
+
   return (
     <div>
       <HeroCarousel slides={slides} />
 
-      {/* Two featured categories, large format */}
+      {/* Featured categories, large format */}
       <section className="mt-20">
         <h2 className="text-center text-2xl">Start With a Favourite</h2>
         <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2">
-          {categories.slice(0, 2).map((c) => (
+          {favourites.map((c) => (
             <Link
               key={c.id}
               href={`/shop?category=${c.slug}`}
-              className="group flex flex-col items-center rounded-lg bg-fog-card px-8 py-12 text-center transition hover:-translate-y-1"
+              className="group flex flex-col items-center overflow-hidden rounded-lg bg-fog-card text-center transition hover:-translate-y-1"
             >
-              <ProductIcon icon={categoryIcons[c.slug] || "bear"} size={140} />
-              <h3 className="mt-6 text-xl">{c.name}</h3>
-              <p className="mt-2 max-w-[32ch] text-sm text-ink-soft">{categoryTaglines[c.slug] || c.description}</p>
-              <span className="mt-4 text-sm font-semibold underline underline-offset-4">Shop Now</span>
+              {c.imagePath ? (
+                <div className="h-48 w-full overflow-hidden">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={c.imagePath} alt="" className="h-full w-full object-cover" />
+                </div>
+              ) : (
+                <div className="pt-12">
+                  <ProductIcon icon={categoryIcons[c.slug] || "bear"} size={140} />
+                </div>
+              )}
+              <div className="px-8 pb-12 pt-6">
+                <h3 className="text-xl">{c.name}</h3>
+                <p className="mt-2 max-w-[32ch] text-sm text-ink-soft">{categoryTaglines[c.slug] || c.description}</p>
+                <span className="mt-4 inline-block text-sm font-semibold underline underline-offset-4">Shop Now</span>
+              </div>
             </Link>
           ))}
         </div>
@@ -68,12 +85,21 @@ export default async function HomePage() {
               href={`/shop?category=${c.slug}`}
               className="group flex items-center gap-5 rounded-lg p-4 transition hover:-translate-y-1"
             >
-              <div className="flex h-24 w-24 flex-none items-center justify-center rounded bg-fog-card">
-                <ProductIcon icon={categoryIcons[c.slug] || "bear"} size={72} />
+              <div className="flex h-24 w-24 flex-none items-center justify-center overflow-hidden rounded bg-fog-card">
+                {c.imagePath ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={c.imagePath} alt="" className="h-full w-full object-cover" />
+                ) : (
+                  <ProductIcon icon={categoryIcons[c.slug] || "bear"} size={72} />
+                )}
               </div>
               <div>
                 <span className="inline-block rounded-full bg-gold px-2.5 py-0.5 text-xs font-semibold text-ink">
-                  {categoryBadges[c.slug] || "Handmade"}
+                  {c.type === "featured"
+                    ? "Featured"
+                    : c.type === "new-arrival"
+                      ? "New Arrival"
+                      : categoryBadges[c.slug] || "Handmade"}
                 </span>
                 <h3 className="mt-2 text-lg">{c.name}</h3>
                 <span className="text-sm text-ink-soft">{categoryTaglines[c.slug] || c.description}</span>
