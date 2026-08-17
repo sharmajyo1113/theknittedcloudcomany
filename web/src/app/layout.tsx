@@ -7,8 +7,12 @@ import { Footer } from "@/components/Footer";
 import { ProductIconDefs } from "@/components/ProductIcon";
 
 export const metadata: Metadata = {
-  title: "The Knitted Cloud Company",
-  description: "Handknitted toys, blankets and nursery textiles.",
+  title: {
+    default: "The Knitted Cloud Company — Handknitted Toys, Blankets & Nursery Textiles",
+    template: "%s | The Knitted Cloud Company",
+  },
+  description:
+    "Hand-knitted teddy bears, blankets and nursery textiles made slowly in small batches from natural fibres. Every piece passes through one knitter's hands from cast-on to bind-off.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

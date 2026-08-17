@@ -30,7 +30,7 @@ const SCATTER = [
   { icon: 'sheep', size: 70, top: '58%', left: '4%', rotate: 6 },
   { icon: 'blanket', size: 100, top: '15%', left: '84%', rotate: 10 },
   { icon: 'cushion', size: 80, top: '62%', left: '86%', rotate: -6 },
-  { icon: 'bear', size: 60, top: '78%', left: '20%', rotate: 12 },
+  { icon: 'bunny', size: 60, top: '78%', left: '20%', rotate: 12 },
   { icon: 'sheep', size: 64, top: '10%', left: '45%', rotate: -4 },
 ];
 

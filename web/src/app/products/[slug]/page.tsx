@@ -1,9 +1,23 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { fetchProduct, money } from "@/lib/api";
 import { ProductIcon } from "@/components/ProductIcon";
 import { ProductCard } from "@/components/ProductCard";
 import { AddToCartForm } from "@/components/AddToCartForm";
+
+export async function generateMetadata(props: PageProps<"/products/[slug]">): Promise<Metadata> {
+  const { slug } = await props.params;
+  try {
+    const { product } = await fetchProduct(slug);
+    return {
+      title: `${product.name} — Handknitted ${product.category?.name || "Piece"}`,
+      description: product.description,
+    };
+  } catch {
+    return { title: "Product Not Found" };
+  }
+}
 
 export default async function ProductPage(props: PageProps<"/products/[slug]">) {
   const { slug } = await props.params;

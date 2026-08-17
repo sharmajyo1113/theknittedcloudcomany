@@ -28,42 +28,42 @@ async function main() {
     const products = [
         {
             name: 'Wilfred the Bear', slug: 'wilfred-the-bear', categoryId: 'knitted-toys', sku: 'WB-001',
-            description: 'Undyed merino, 28cm. Hand-knitted with embroidered features and every seam woven in so nothing comes loose.',
+            description: "A steady little face for a nursery shelf or a lifetime of hugs. Wilfred is hand-knitted from undyed merino, 28cm nose to toe, with every seam woven in by hand so nothing ever comes loose — and features embroidered, never printed, so his expression won't fade or peel.",
             price: 5644, stock: 14, icon: 'bear',
         },
         {
             name: 'Marlow the Sheep', slug: 'marlow-the-sheep', categoryId: 'knitted-toys', sku: 'WB-002',
-            description: 'Bouclé wool, 24cm. A looped fleece texture knitted over a soft-stuffed body.',
+            description: "Marlow's fleece is knitted in a bouclé wool that keeps its looped, tactile texture wash after wash — the closest thing to real curls we can put in small hands. 24cm, soft-stuffed body, made to be dragged everywhere and loved regardless.",
             price: 5146, stock: 9, icon: 'sheep',
         },
         {
             name: 'Hazel the Bunny', slug: 'hazel-the-bunny', categoryId: 'knitted-toys', sku: 'WB-003',
-            description: 'Organic cotton, 26cm, with long floppy ears and an embroidered face.',
-            price: 4814, stock: 11, icon: 'bear',
+            description: "Long floppy ears and an embroidered face give Hazel her quiet, watchful charm. Knitted from organic cotton, 26cm, she's soft enough for newborn hands and sturdy enough to survive years of bedtime.",
+            price: 4814, stock: 11, icon: 'bunny',
         },
         {
             name: 'Overcast Cot Blanket', slug: 'overcast-cot-blanket', categoryId: 'blankets-throws', sku: 'WB-010',
-            description: 'Organic cotton, 90x120cm, knitted in a soft stockinette weave with a hand-tied fringe.',
+            description: 'A soft stockinette weave in organic cotton, finished with a hand-tied fringe — 90x120cm, sized for a cot but destined to follow a child well past it. Breathable enough for warm nights, cosy enough for cold ones.',
             price: 7968, stock: 20, icon: 'blanket',
         },
         {
             name: 'Dawn Ridge Throw', slug: 'dawn-ridge-throw', categoryId: 'blankets-throws', sku: 'WB-011',
-            description: 'Chunky merino throw, 130x170cm, for the whole family to share.',
+            description: 'Chunky merino, knitted at a scale built for sharing — 130x170cm, big enough for the whole family under one blanket on a slow Sunday. Wool that only gets softer with time.',
             price: 12284, stock: 7, icon: 'blanket',
         },
         {
             name: 'Cloud Cushion Trio', slug: 'cloud-cushion-trio', categoryId: 'nursery-sets', sku: 'WB-020',
-            description: 'Set of 3 cloud-shaped cushions, cotton blend with piped edges.',
+            description: 'Three cloud-shaped cushions in a soft cotton blend, each finished with a neat piped edge. Scatter them across a nursery chair or a reading nook — they hold their shape and their softness.',
             price: 6972, stock: 16, icon: 'cushion',
         },
         {
             name: 'Drifting Clouds Mobile', slug: 'drifting-clouds-mobile', categoryId: 'nursery-sets', sku: 'WB-021',
-            description: 'Hand-knitted cloud mobile for cot or bassinet, natural beechwood ring.',
-            price: 5976, stock: 10, icon: 'cushion',
+            description: "A hand-knitted cloud mobile suspended from a natural beechwood ring — gentle movement and soft shapes for a cot or bassinet, made to be one of the first things a baby learns to watch.",
+            price: 5976, stock: 10, icon: 'mobile',
         },
         {
             name: 'New Arrival Gift Set', slug: 'new-arrival-gift-set', categoryId: 'gift-bundles', sku: 'WB-030',
-            description: 'Wilfred the Bear and the Overcast Cot Blanket, boxed and ribboned, ready to gift.',
+            description: 'Wilfred the Bear and the Overcast Cot Blanket, boxed together and ribboned — a ready-to-give set for a baby shower or a new arrival, with nothing left for you to wrap.',
             price: 12450, stock: 8, icon: 'bear',
         },
     ];

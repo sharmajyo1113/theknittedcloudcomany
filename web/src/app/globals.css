@@ -8,6 +8,7 @@
   --color-sky: #71889F;
   --color-sky-deep: #4E6377;
   --color-gold: #C98F35;
+  --color-blush: #C98072;
   --color-line: #E3E3E6;
   --color-danger: #B3453D;
   --color-success: #4C7A55;
@@ -22,6 +23,7 @@
     --color-sky: #93A9BF;
     --color-sky-deep: #B7C7D8;
     --color-gold: #E3AC57;
+    --color-blush: #D99A8C;
     --color-line: #38383C;
   }
 }
@@ -34,6 +36,7 @@
   --color-sky: var(--color-sky);
   --color-sky-deep: var(--color-sky-deep);
   --color-gold: var(--color-gold);
+  --color-blush: var(--color-blush);
   --color-line: var(--color-line);
   --color-danger: var(--color-danger);
   --color-success: var(--color-success);

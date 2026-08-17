@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-export const metadata = { title: "Our Story — The Knitted Cloud Company" };
+export const metadata = { title: "Our Story" };
 
 export default function AboutPage() {
   return (

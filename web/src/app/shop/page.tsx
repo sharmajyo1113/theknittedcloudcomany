@@ -1,6 +1,13 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { fetchProducts, fetchCategories, fetchPriceRange, money } from "@/lib/api";
 import { ProductCard } from "@/components/ProductCard";
+
+export const metadata: Metadata = {
+  title: "Shop Handknitted Toys, Blankets & Nursery Sets",
+  description:
+    "Browse hand-knitted teddy bears, blankets and nursery textiles — knitted toys, blankets & throws, nursery sets and gift bundles, made in small batches from natural fibres.",
+};
 
 export default async function ShopPage(props: PageProps<"/shop">) {
   const searchParams = await props.searchParams;
