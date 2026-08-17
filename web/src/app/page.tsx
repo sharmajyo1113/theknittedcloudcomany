@@ -118,22 +118,17 @@ export default async function HomePage() {
         <ProductTabs products={products} categories={categories} />
       </section>
 
-      {/* Brand story split banner */}
-      <section className="mt-16 grid grid-cols-1 items-center gap-10 rounded-lg bg-fog-card p-10 md:grid-cols-2">
-        <div className="flex aspect-[4/3] items-center justify-center rounded bg-fog">
-          <ProductIcon icon="sheep" size={160} />
-        </div>
-        <div>
-          <span className="text-xs font-semibold uppercase tracking-widest text-sky-deep">Our Story</span>
-          <h2 className="mt-2 text-3xl">Every piece starts as a single loop.</h2>
-          <p className="mt-3 max-w-[46ch] text-ink-soft">
-            We&apos;re a small workshop by choice — every order passes through the hands of one of
-            our knitters from cast-on to bind-off, then through a second pair for finishing.
-          </p>
-          <Link href="/about" className="mt-5 inline-block rounded border border-ink px-6 py-2.5 font-semibold">
-            Read Our Story
-          </Link>
-        </div>
+      {/* Brand story banner */}
+      <section className="mt-16 rounded-lg bg-fog-card p-10 text-center">
+        <span className="text-xs font-semibold uppercase tracking-widest text-sky-deep">Our Story</span>
+        <h2 className="mx-auto mt-2 max-w-[32ch] text-3xl">Every piece starts as a single loop.</h2>
+        <p className="mx-auto mt-3 max-w-[46ch] text-ink-soft">
+          We&apos;re a small workshop by choice — every order passes through the hands of one of
+          our knitters from cast-on to bind-off, then through a second pair for finishing.
+        </p>
+        <Link href="/about" className="mt-5 inline-block rounded border border-ink px-6 py-2.5 font-semibold">
+          Read Our Story
+        </Link>
       </section>
 
       {/* Trust / difference */}
