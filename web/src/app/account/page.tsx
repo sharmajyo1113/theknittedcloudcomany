@@ -16,9 +16,16 @@ export default function AccountPage() {
     (async () => {
       const token = await getToken();
       if (!token) return;
-      const [{ orders }, admin] = await Promise.all([fetchOrders(token), checkIsAdmin(token)]);
-      setOrders(orders.slice(0, 5));
-      setIsAdmin(admin);
+
+      // Independent of each other — a failure fetching orders shouldn't
+      // block the admin check (or vice versa) from ever resolving.
+      checkIsAdmin(token).then(setIsAdmin);
+      try {
+        const { orders } = await fetchOrders(token);
+        setOrders(orders.slice(0, 5));
+      } catch {
+        setOrders([]);
+      }
     })();
   }, [loading, user, getToken]);
 
