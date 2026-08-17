@@ -26,6 +26,8 @@ app.get('/health', (req, res) => res.json({ ok: true }));
 app.use('/api', require('./routes/products'));
 app.use('/api', require('./routes/categories'));
 app.use('/api', require('./routes/orders'));
+app.use('/api', require('./routes/slides'));
+app.use('/api', require('./routes/theme'));
 app.use('/api/admin', require('./routes/admin'));
 
 app.use((req, res) => res.status(404).json({ error: 'Not found.' }));

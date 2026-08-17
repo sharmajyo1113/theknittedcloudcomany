@@ -255,4 +255,84 @@ export async function uploadAdminImage(token: string, file: File): Promise<{ url
   return res.json();
 }
 
+export type Slide = {
+  id: string;
+  eyebrow: string;
+  title: string;
+  description: string;
+  ctaLabel: string;
+  ctaHref: string;
+  imagePath: string | null;
+  order: number;
+};
+
+export type NewSlide = {
+  eyebrow?: string;
+  title: string;
+  description?: string;
+  ctaLabel: string;
+  ctaHref: string;
+  imagePath?: string | null;
+  order?: number;
+};
+
+export function fetchSlides(): Promise<{ slides: Slide[] }> {
+  return apiFetch('/api/slides');
+}
+
+export function fetchAdminSlides(token: string): Promise<{ slides: Slide[] }> {
+  return apiFetch('/api/admin/slides', { headers: { Authorization: `Bearer ${token}` } });
+}
+
+export function createAdminSlide(token: string, slide: NewSlide): Promise<{ slide: Slide }> {
+  return apiFetch('/api/admin/slides', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify(slide),
+  });
+}
+
+export function updateAdminSlide(token: string, id: string, patch: Partial<NewSlide>): Promise<{ slide: Slide }> {
+  return apiFetch(`/api/admin/slides/${id}`, {
+    method: 'PATCH',
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify(patch),
+  });
+}
+
+export function deleteAdminSlide(token: string, id: string): Promise<{ ok: true }> {
+  return apiFetch(`/api/admin/slides/${id}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+export type Theme = {
+  buttonColor?: string;
+  textColor?: string;
+  popupColor?: string;
+  headerColor?: string;
+  footerColor?: string;
+  logoUrl?: string | null;
+};
+
+export async function fetchTheme(): Promise<Theme> {
+  const { theme } = await apiFetch<{ theme: Theme }>('/api/theme');
+  return theme;
+}
+
+export async function fetchAdminTheme(token: string): Promise<Theme> {
+  const { theme } = await apiFetch<{ theme: Theme }>('/api/admin/theme', { headers: { Authorization: `Bearer ${token}` } });
+  return theme;
+}
+
+export async function updateAdminTheme(token: string, patch: Theme): Promise<Theme> {
+  const { theme } = await apiFetch<{ theme: Theme }>('/api/admin/theme', {
+    method: 'PATCH',
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify(patch),
+  });
+  return theme;
+}
+
 export { API_URL };

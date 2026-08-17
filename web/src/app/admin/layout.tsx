@@ -8,6 +8,7 @@ import { checkIsAdmin } from '@/lib/api';
 
 const NAV = [
   { href: '/admin', label: 'Products' },
+  { href: '/admin/config', label: 'Application Configuration' },
   { href: '/admin/categories', label: 'Categories' },
   { href: '/admin/orders', label: 'Orders' },
   { href: '/admin/customers', label: 'Customers' },

@@ -12,6 +12,9 @@
   --color-line: #E6DCCB;
   --color-danger: #B3453D;
   --color-success: #4C7A55;
+  --color-header: var(--color-fog);
+  --color-footer: var(--color-fog);
+  --color-popup: var(--color-fog);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -40,6 +43,9 @@
   --color-line: var(--color-line);
   --color-danger: var(--color-danger);
   --color-success: var(--color-success);
+  --color-header: var(--color-header);
+  --color-footer: var(--color-footer);
+  --color-popup: var(--color-popup);
   --font-serif: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
   --font-sans: -apple-system, "Segoe UI", "Avenir Next", "Helvetica Neue", Arial, sans-serif;
 }

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { fetchProducts, fetchCategories } from "@/lib/api";
+import { fetchProducts, fetchCategories, fetchSlides } from "@/lib/api";
 import { ProductIcon } from "@/components/ProductIcon";
 import { HeroCarousel } from "@/components/HeroCarousel";
 import { ProductTabs } from "@/components/ProductTabs";
@@ -26,14 +26,15 @@ const categoryIcons: Record<string, string> = {
 };
 
 export default async function HomePage() {
-  const [{ products }, { categories }] = await Promise.all([
+  const [{ products }, { categories }, { slides }] = await Promise.all([
     fetchProducts({ sort: "newest" }),
     fetchCategories(),
+    fetchSlides(),
   ]);
 
   return (
     <div>
-      <HeroCarousel />
+      <HeroCarousel slides={slides} />
 
       {/* Two featured categories, large format */}
       <section className="mt-20">

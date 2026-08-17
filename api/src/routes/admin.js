@@ -320,4 +320,110 @@ router.get('/customers', async (req, res, next) => {
     }
 });
 
+// ---------------- Homepage Slides ----------------
+
+router.get('/slides', async (req, res, next) => {
+    try {
+        const snap = await getDb().collection('slides').get();
+        const slides = snap.docs
+            .map((d) => ({ id: d.id, ...d.data() }))
+            .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+        res.json({ slides });
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.post('/slides', async (req, res, next) => {
+    try {
+        const { eyebrow, title, description, ctaLabel, ctaHref, imagePath, order } = req.body;
+        if (!title || !ctaLabel || !ctaHref) {
+            return res.status(400).json({ error: 'Please provide a title, CTA label, and CTA link.' });
+        }
+
+        const db = getDb();
+        const ref = db.collection('slides').doc();
+        const slide = {
+            eyebrow: eyebrow || '',
+            title,
+            description: description || '',
+            ctaLabel,
+            ctaHref,
+            imagePath: imagePath || null,
+            order: Number.isFinite(order) ? order : Date.now(),
+            createdAt: new Date().toISOString(),
+        };
+        await ref.set(slide);
+        res.status(201).json({ slide: { id: ref.id, ...slide } });
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.patch('/slides/:id', async (req, res, next) => {
+    try {
+        const { eyebrow, title, description, ctaLabel, ctaHref, imagePath, order } = req.body;
+        const data = {};
+        if (eyebrow !== undefined) data.eyebrow = eyebrow;
+        if (title !== undefined) data.title = title;
+        if (description !== undefined) data.description = description;
+        if (ctaLabel !== undefined) data.ctaLabel = ctaLabel;
+        if (ctaHref !== undefined) data.ctaHref = ctaHref;
+        if (imagePath !== undefined) data.imagePath = imagePath;
+        if (order !== undefined) data.order = order;
+
+        const db = getDb();
+        const ref = db.collection('slides').doc(req.params.id);
+        await ref.update(data);
+        const doc = await ref.get();
+        res.json({ slide: { id: doc.id, ...doc.data() } });
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.delete('/slides/:id', async (req, res, next) => {
+    try {
+        await getDb().collection('slides').doc(req.params.id).delete();
+        res.json({ ok: true });
+    } catch (err) {
+        next(err);
+    }
+});
+
+// ---------------- Application Configuration (theme) ----------------
+
+const THEME_FIELDS = ['buttonColor', 'textColor', 'popupColor', 'headerColor', 'footerColor'];
+const HEX_COLOR = /^#[0-9a-fA-F]{6}$/;
+
+router.get('/theme', async (req, res, next) => {
+    try {
+        const doc = await getDb().collection('settings').doc('theme').get();
+        res.json({ theme: doc.exists ? doc.data() : {} });
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.patch('/theme', async (req, res, next) => {
+    try {
+        const data = {};
+        for (const field of THEME_FIELDS) {
+            const value = req.body[field];
+            if (value === undefined) continue;
+            if (value !== null && !HEX_COLOR.test(value)) {
+                return res.status(400).json({ error: `${field} must be a hex color like #C4986A.` });
+            }
+            data[field] = value;
+        }
+        if (req.body.logoUrl !== undefined) data.logoUrl = req.body.logoUrl;
+        const ref = getDb().collection('settings').doc('theme');
+        await ref.set(data, { merge: true });
+        const doc = await ref.get();
+        res.json({ theme: doc.data() });
+    } catch (err) {
+        next(err);
+    }
+});
+
 module.exports = router;

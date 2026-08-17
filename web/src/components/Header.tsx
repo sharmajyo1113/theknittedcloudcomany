@@ -5,16 +5,20 @@ import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
 import { TopBar } from '@/components/TopBar';
 
-export function Header() {
+export function Header({ logoUrl }: { logoUrl?: string | null }) {
   const { user, signOut } = useAuth();
   const { count } = useCart();
 
   return (
-    <header className="sticky top-0 z-10 bg-fog">
+    <header className="sticky top-0 z-20 bg-header">
       <TopBar />
       <div className="border-b border-line">
         <div className="mx-auto grid max-w-6xl grid-cols-2 items-center gap-6 px-6 py-5 sm:grid-cols-[1fr_auto_1fr]">
-          <Link href="/" className="text-xl font-semibold">
+          <Link href="/" className="flex items-center gap-3 text-xl font-semibold">
+            {logoUrl && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={logoUrl} alt="" className="h-10 w-auto object-contain" />
+            )}
             The Knitted Cloud Co.
           </Link>
 

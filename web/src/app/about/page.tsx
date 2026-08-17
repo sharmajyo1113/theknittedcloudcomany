@@ -1,11 +1,21 @@
 import Link from "next/link";
+import { fetchTheme, type Theme } from "@/lib/api";
 
 export const metadata = { title: "Our Story" };
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const theme = await fetchTheme().catch((): Theme => ({}));
+
   return (
     <div>
-      <h1 className="text-3xl">How We Cast On</h1>
+      <div className="flex items-center gap-4">
+        {theme.logoUrl && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={theme.logoUrl} alt="" className="h-16 w-auto object-contain" />
+        )}
+        <span className="text-xl font-semibold">The Knitted Cloud Co.</span>
+      </div>
+      <h1 className="mt-4 text-3xl">How We Cast On</h1>
       <p className="mt-3 max-w-[60ch] text-lg text-ink-soft">
         The Knitted Cloud Company began at a kitchen table with two needles and a skein of undyed
         merino — a search for toys soft enough for a newborn&apos;s grip and sturdy enough to survive
