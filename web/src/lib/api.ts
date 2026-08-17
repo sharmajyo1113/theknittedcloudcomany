@@ -10,6 +10,7 @@ export type Product = {
   stock: number;
   imagePath: string | null;
   icon: string;
+  isActive?: boolean;
   category: { id: string; name: string; slug: string } | null;
 };
 
@@ -149,6 +150,94 @@ export function createAdminProduct(token: string, product: NewProduct): Promise<
     headers: { Authorization: `Bearer ${token}` },
     body: JSON.stringify(product),
   });
+}
+
+export function updateAdminProduct(
+  token: string,
+  id: string,
+  patch: Partial<NewProduct>
+): Promise<{ product: Product }> {
+  return apiFetch(`/api/admin/products/${id}`, {
+    method: 'PATCH',
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify(patch),
+  });
+}
+
+export function deleteAdminProduct(token: string, id: string): Promise<{ ok: true; hidden?: boolean }> {
+  return apiFetch(`/api/admin/products/${id}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+export type AdminCategory = Category & { _count: { products: number } };
+
+export function fetchAdminCategories(token: string): Promise<{ categories: AdminCategory[] }> {
+  return apiFetch('/api/admin/categories', { headers: { Authorization: `Bearer ${token}` } });
+}
+
+export function createAdminCategory(
+  token: string,
+  category: { name: string; description?: string }
+): Promise<{ category: Category }> {
+  return apiFetch('/api/admin/categories', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify(category),
+  });
+}
+
+export function deleteAdminCategory(token: string, id: string): Promise<{ ok: true }> {
+  return apiFetch(`/api/admin/categories/${id}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+export type AdminOrder = Order & { userId: string; user: { name: string; email: string } | null };
+
+export function fetchAdminOrders(token: string, status?: string): Promise<{ orders: AdminOrder[] }> {
+  const query = status ? `?status=${status}` : '';
+  return apiFetch(`/api/admin/orders${query}`, { headers: { Authorization: `Bearer ${token}` } });
+}
+
+export function updateAdminOrderStatus(
+  token: string,
+  id: string,
+  status: string
+): Promise<{ order: AdminOrder }> {
+  return apiFetch(`/api/admin/orders/${id}`, {
+    method: 'PATCH',
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ status }),
+  });
+}
+
+export type AdminCustomer = {
+  id: string;
+  name: string;
+  email: string;
+  createdAt: string;
+  orderCount: number;
+  totalSpent: number;
+};
+
+export function fetchAdminCustomers(token: string): Promise<{ customers: AdminCustomer[] }> {
+  return apiFetch('/api/admin/customers', { headers: { Authorization: `Bearer ${token}` } });
+}
+
+export type AdminDashboard = {
+  totalProducts: number;
+  totalOrders: number;
+  totalCustomers: number;
+  revenue: number;
+  statusCounts: Record<string, number>;
+  lowStock: Product[];
+};
+
+export function fetchAdminDashboard(token: string): Promise<AdminDashboard> {
+  return apiFetch('/api/admin/dashboard', { headers: { Authorization: `Bearer ${token}` } });
 }
 
 export async function uploadAdminImage(token: string, file: File): Promise<{ url: string }> {
